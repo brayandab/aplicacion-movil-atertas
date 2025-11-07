@@ -7,14 +7,12 @@ plugins {
 
 android {
     namespace = "com.proyecto.accidentes"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 34  // ✅ estable
 
     defaultConfig {
         applicationId = "com.proyecto.accidentes"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -30,19 +28,23 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
 }
 
 dependencies {
+    // 🔹 Android y Jetpack Compose
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -51,7 +53,18 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+
+    // 🔹 Firebase Cloud Messaging (notificaciones)
     implementation(libs.firebase.messaging)
+
+    // 🔹 Retrofit (para conectar con tu backend Flask)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // 🔹 Socket.IO (para alertas en tiempo real)
+    implementation("io.socket:socket.io-client:2.1.0")
+
+    // 🔹 Pruebas
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

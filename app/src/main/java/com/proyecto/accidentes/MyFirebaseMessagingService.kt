@@ -13,37 +13,40 @@ import com.google.firebase.messaging.RemoteMessage
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
+    // ✅ Este se ejecuta cuando llega una notificación FCM
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        // Título y mensaje del aviso
         val title = remoteMessage.notification?.title ?: "Alerta de Accidente"
         val message = remoteMessage.notification?.body ?: "Se ha detectado un accidente"
 
-        // Coordenadas si llegan en el payload
         val lat = remoteMessage.data["lat"]
         val lon = remoteMessage.data["lon"]
 
         showNotification(title, message, lat, lon)
     }
 
+    // ✅ Este se ejecuta cuando se genera o actualiza el token FCM del dispositivo
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+        android.util.Log.d("FCM_TOKEN", "Nuevo token: $token")
+        // Aquí podrías enviar el token a tu backend Flask si lo deseas
+    }
+
     private fun showNotification(title: String, message: String, lat: String?, lon: String?) {
         val channelId = "accidentes_alertas"
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // ✅ Si hay coordenadas, abrimos directamente Google Maps
         val intent = if (lat != null && lon != null) {
             try {
                 val gmmIntentUri = Uri.parse("geo:$lat,$lon?q=$lat,$lon(Accidente detectado)")
                 Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
-                    setPackage("com.google.android.apps.maps") // Fuerza abrir en Google Maps
+                    setPackage("com.google.android.apps.maps")
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
             } catch (e: Exception) {
-                // Si algo falla, abre en el navegador
                 val webUri = Uri.parse("https://www.google.com/maps?q=$lat,$lon")
                 Intent(Intent.ACTION_VIEW, webUri)
             }
         } else {
-            // Si no hay coordenadas, abre la app normal
             Intent(this, MainActivity::class.java)
         }
 
